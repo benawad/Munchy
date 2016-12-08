@@ -1,8 +1,11 @@
 package com.benawad.dunch;
 
 import android.os.AsyncTask;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     TextView mCostCat;
     private String mBaseUrl;
     private OkHttpClient mClient;
+    final private String iKey = "I_KEY";
+    final private String iLastKey = "ILAST_KEY";
+    final private String restaurantsKey = "RESTAURANTS_KEY";
     private int i;
     private int iLast;
     private List<Restaurant> mRestaurants = new ArrayList<>();
@@ -35,23 +41,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String query = "Food";
-        String location = "Richardson%2C+TX";
-        mBaseUrl = makeBaseUrl(query, location);
-        mClient = new OkHttpClient();
-        i = -1;
-        iLast = i;
-        new FindPictures().execute("0");
-
         mMainImage = (ImageView) findViewById(R.id.mainImage);
         mTitle = (TextView) findViewById(R.id.restaurantLabel);
         mCostCat = (TextView) findViewById(R.id.costCatLabel);
 
-        // Initial image
-        Picasso
-                .with(MainActivity.this)
-                .load("http://www.chowstatic.com/assets/recipe_photos/30302_waffles.jpg")
-                .into(mMainImage);
+        mBaseUrl = makeBaseUrl("Food", "Richardson%2C+TX");
+        mClient = new OkHttpClient();
+
+        if (savedInstanceState != null) {
+            i = savedInstanceState.getInt(iKey);
+            iLast = savedInstanceState.getInt(iLastKey);
+            mRestaurants = savedInstanceState.getParcelableArrayList(restaurantsKey);
+            displayRestaurant(mRestaurants.get(i));
+        } else {
+            i = -1;
+            iLast = i;
+            new FindPictures().execute("0");
+            // Initial image
+            Picasso
+                    .with(MainActivity.this)
+                    .load("http://www.chowstatic.com/assets/recipe_photos/30302_waffles.jpg")
+                    .into(mMainImage);
+        }
+
         mMainImage.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeLeft() {
@@ -74,6 +86,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
     }
 
     private void newRestaurant() {
@@ -157,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
             }
             if (restaurants != null) {
                 for (int i = 0; i < restaurants.size(); i++) {
-                    System.out.println(restaurants.get(i).getName());
                     fetchPictures(restaurants.get(i), page, i);
                 }
             }
@@ -200,6 +216,14 @@ public class MainActivity extends AppCompatActivity {
             return response.body().string();
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(iKey, i);
+        outState.putInt(iLastKey, iLast);
+        outState.putParcelableArrayList(restaurantsKey, (ArrayList<? extends Parcelable>) mRestaurants);
+        super.onSaveInstanceState(outState);
     }
 
     class MorePictures extends AsyncTask<Integer, List<String>, String> {

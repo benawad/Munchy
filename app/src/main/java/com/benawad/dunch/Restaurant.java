@@ -1,8 +1,11 @@
 package com.benawad.dunch;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class Restaurant {
+public class Restaurant implements Parcelable{
 
     private String name;
     private String mainUrl;
@@ -22,6 +25,30 @@ public class Restaurant {
         this.costCat = "";
         this.page = 30;
     }
+
+    protected Restaurant(Parcel in) {
+        name = in.readString();
+        mainUrl = in.readString();
+        picUrl = in.readString();
+        pictures = in.createStringArrayList();
+        base = in.readString();
+        currPic = in.readInt();
+        costCat = in.readString();
+        page = in.readInt();
+        iLast = in.readInt();
+    }
+
+    public static final Creator<Restaurant> CREATOR = new Creator<Restaurant>() {
+        @Override
+        public Restaurant createFromParcel(Parcel in) {
+            return new Restaurant(in);
+        }
+
+        @Override
+        public Restaurant[] newArray(int size) {
+            return new Restaurant[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -91,5 +118,23 @@ public class Restaurant {
 
     public void setiLast(int iLast) {
         this.iLast = iLast;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(name);
+        parcel.writeString(mainUrl);
+        parcel.writeString(picUrl);
+        parcel.writeStringList(pictures);
+        parcel.writeString(base);
+        parcel.writeInt(currPic);
+        parcel.writeString(costCat);
+        parcel.writeInt(page);
+        parcel.writeInt(iLast);
     }
 }
