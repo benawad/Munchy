@@ -32,9 +32,11 @@ import com.yelp.clientlib.entities.options.CoordinateOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     CoordinateOptions mCoordinate;
     Map<String, String> mParams;
     boolean newSession = false;
+    int pageNum = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,9 +220,10 @@ public class MainActivity extends AppCompatActivity {
         if (mRestaurants.size() > i) {
             i++;
             waitForRestaurant(true);
-            if (i > iLast && i %  5 == 0) {
+            if (i - iLast > 5 && mRestaurants.size() - i < 10) {
                 iLast = i;
-                new FindPictures().execute(""+(i*10 / 5));
+                new FindPictures().execute(""+pageNum);
+                pageNum += 40;
             }
         }
     }
@@ -236,8 +240,8 @@ public class MainActivity extends AppCompatActivity {
         if (currRestaurant.getPictures().size() > currRestaurant.getCurrPic()) {
             currRestaurant.incCurrPic();
             displayRestaurant(currRestaurant);
-            if (currRestaurant.getCurrPic() > currRestaurant.getiLast() &&
-                    currRestaurant.getCurrPic() %  15 == 0) {
+            if (currRestaurant.getCurrPic() - currRestaurant.getiLast() > 5 &&
+                    currRestaurant.getPictures().size() - currRestaurant.getCurrPic() < 7) {
                 currRestaurant.setiLast(currRestaurant.getCurrPic());
                 new MorePictures().execute(i);
             }
@@ -287,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             String page = strings[0];
+            mParams.put("offset", page);
             retrofit2.Call<SearchResponse> call = mYelpApi.search(mCoordinate, mParams);
             retrofit2.Response<SearchResponse> sr = null;
             try {
@@ -298,7 +303,9 @@ public class MainActivity extends AppCompatActivity {
 
             if (sr != null) {
                 restaurants = new ArrayList<>();
-                for (Business b : sr.body().businesses()) {
+                List<Business> businesses = sr.body().businesses();
+                Collections.shuffle(businesses, new Random(System.nanoTime()));
+                for (Business b : businesses) {
                     Restaurant r = new Restaurant(b.name(), b.url());
                     r.setCostCat(b.rating() + " " + categoriesToString(b.categories()));
                     restaurants.add(r);
