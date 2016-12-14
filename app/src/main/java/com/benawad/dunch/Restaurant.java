@@ -11,7 +11,6 @@ public class Restaurant implements Parcelable{
     private String mainUrl;
     private String picUrl;
     private List<String> pictures;
-    private String base = "https://www.yelp.com";
     private int currPic;
     private String costCat;
     private int page;
@@ -19,7 +18,8 @@ public class Restaurant implements Parcelable{
 
     public Restaurant(String name, String mainUrl) {
         this.name = name;
-        setMainUrl(base + mainUrl);
+        System.out.println(mainUrl);
+        setMainUrl(mainUrl);
         this.currPic = 0;
         this.iLast = 0;
         this.costCat = "";
@@ -31,7 +31,6 @@ public class Restaurant implements Parcelable{
         mainUrl = in.readString();
         picUrl = in.readString();
         pictures = in.createStringArrayList();
-        base = in.readString();
         currPic = in.readInt();
         costCat = in.readString();
         page = in.readInt();
@@ -131,7 +130,6 @@ public class Restaurant implements Parcelable{
         parcel.writeString(mainUrl);
         parcel.writeString(picUrl);
         parcel.writeStringList(pictures);
-        parcel.writeString(base);
         parcel.writeInt(currPic);
         parcel.writeString(costCat);
         parcel.writeInt(page);
