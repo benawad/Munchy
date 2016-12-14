@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     CoordinateOptions mCoordinate;
     Map<String, String> mParams;
     boolean newSession = false;
-    int pageNum = 0;
+    int pageNum = 40;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         mParams = new HashMap<>();
         mParams.put("term", "food");
+        mParams.put("limit", "40");
 
         if (savedInstanceState != null) {
             i = savedInstanceState.getInt(iKey);
