@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
     synchronized public void waitForRestaurant(boolean client) {
         if (client) {
-            if (mRestaurants.size() > i) {
+            if (mRestaurants.size() > i && mRestaurants.get(i).getPictures().size() > mRestaurants.get(i).getCurrPic()) {
                 mLoading.setVisibility(View.INVISIBLE);
                 recipeCallback();
             } else {
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         Restaurant currRestaurant = getRestaurant(i);
         if (currRestaurant.getPictures().size() > currRestaurant.getCurrPic()) {
             currRestaurant.incCurrPic();
-            displayRestaurant(currRestaurant);
+            waitForRestaurant(true);
             if (currRestaurant.getCurrPic() - currRestaurant.getiLast() > 5 &&
                     currRestaurant.getPictures().size() - currRestaurant.getCurrPic() < 7) {
                 currRestaurant.setiLast(currRestaurant.getCurrPic());
@@ -351,15 +351,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        String run(String url) throws IOException {
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-
-            Response response = mClient.newCall(request).execute();
-            return response.body().string();
-        }
-
     }
 
     @Override
@@ -378,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(List<String>... values) {
             super.onProgressUpdate(values);
             mRestaurants.get(pos).getPictures().addAll(values[0]);
+            waitForRestaurant(false);
         }
 
         String run(String url) throws IOException {
