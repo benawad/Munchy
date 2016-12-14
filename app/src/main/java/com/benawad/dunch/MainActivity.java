@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     TextView mTitle;
     TextView mCostCat;
     ProgressBar mLoading;
-    private String mBaseUrl;
     private OkHttpClient mClient;
     final private String iKey = "I_KEY";
     final private String iLastKey = "ILAST_KEY";
@@ -78,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         mCostCat = (TextView) findViewById(R.id.costCatLabel);
         mLoading = (ProgressBar) findViewById(R.id.loading);
 
-        mBaseUrl = makeBaseUrl("Food", "Richardson%2C+TX");
         mClient = new OkHttpClient();
 
         mParams = new HashMap<>();
@@ -271,10 +269,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return null;
         }
-    }
-
-    private String makeBaseUrl(String query, String location) {
-        return  "https://www.yelp.com/search?find_desc="+query+"&find_loc="+location+"&ns=1";
     }
 
     class FindPictures extends AsyncTask<String, Restaurant, String> {
