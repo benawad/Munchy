@@ -2,9 +2,11 @@ package com.benawad.dunch;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
@@ -12,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -106,8 +110,15 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeBottom() {
                 sameRestaurantPrevPic();
             }
-        });
 
+            @Override
+            public void onClick() {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(mRestaurants.get(i).getMainUrl()));
+                startActivity(intent);
+            }
+        });
+        
         mApiFactory = new YelpAPIFactory(
                 getString(R.string.consumerKey),
                 getString(R.string.consumerSecret),

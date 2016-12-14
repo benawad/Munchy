@@ -41,6 +41,7 @@
         android:layout_height="match_parent"
         android:layout_above="@id/costCatLabel"
         android:layout_below="@id/restaurantLabel"
+        android:clickable="true"
         android:id="@+id/mainImage" />
 
 </RelativeLayout>

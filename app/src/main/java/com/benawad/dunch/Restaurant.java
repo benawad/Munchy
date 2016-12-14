@@ -18,7 +18,6 @@ public class Restaurant implements Parcelable{
 
     public Restaurant(String name, String mainUrl) {
         this.name = name;
-        System.out.println(mainUrl);
         setMainUrl(mainUrl);
         this.currPic = 0;
         this.iLast = 0;
