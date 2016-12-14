@@ -55,12 +55,11 @@ public class MainActivity extends AppCompatActivity {
             i = savedInstanceState.getInt(iKey);
             iLast = savedInstanceState.getInt(iLastKey);
             mRestaurants = savedInstanceState.getParcelableArrayList(restaurantsKey);
-            displayRestaurant(mRestaurants.get(i));
+            waitForRestaurant(true);
         } else {
             i = 0;
             iLast = i;
             new FindPictures().execute("0");
-            // Initial image
             waitForRestaurant(true);
         }
 
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadingScreen() {
-        mMainImage.setImageResource(0);
+        mMainImage.setImageResource(android.R.color.transparent);
         mCostCat.setText("");
         mTitle.setText("");
         mLoading.setVisibility(View.VISIBLE);
