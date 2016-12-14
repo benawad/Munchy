@@ -7,13 +7,19 @@
     android:paddingBottom="10dp"
     tools:context="com.benawad.dunch.MainActivity">
 
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:id="@+id/loading"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_alignParentTop="true"
         android:id="@+id/restaurantLabel"
-        android:text="title"
+        android:text=""
         android:fontFamily="sans-serif"
         android:textSize="24sp"
         android:textStyle="normal|bold" />
@@ -24,7 +30,7 @@
         android:gravity="center"
         android:id="@+id/costCatLabel"
         android:layout_alignParentBottom="true"
-        android:text="costCat"
+        android:text=""
         android:textSize="18sp" />
 
     <ImageView

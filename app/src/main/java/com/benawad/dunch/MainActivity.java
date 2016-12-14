@@ -5,10 +5,10 @@ import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView mMainImage;
     TextView mTitle;
     TextView mCostCat;
+    ProgressBar mLoading;
     private String mBaseUrl;
     private OkHttpClient mClient;
     final private String iKey = "I_KEY";
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private int i;
     private int iLast;
     private List<Restaurant> mRestaurants = new ArrayList<>();
+    boolean waiting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         mMainImage = (ImageView) findViewById(R.id.mainImage);
         mTitle = (TextView) findViewById(R.id.restaurantLabel);
         mCostCat = (TextView) findViewById(R.id.costCatLabel);
+        mLoading = (ProgressBar) findViewById(R.id.loading);
 
         mBaseUrl = makeBaseUrl("Food", "Richardson%2C+TX");
         mClient = new OkHttpClient();
@@ -54,14 +57,11 @@ public class MainActivity extends AppCompatActivity {
             mRestaurants = savedInstanceState.getParcelableArrayList(restaurantsKey);
             displayRestaurant(mRestaurants.get(i));
         } else {
-            i = -1;
+            i = 0;
             iLast = i;
             new FindPictures().execute("0");
             // Initial image
-            Picasso
-                    .with(MainActivity.this)
-                    .load("http://www.chowstatic.com/assets/recipe_photos/30302_waffles.jpg")
-                    .into(mMainImage);
+            waitForRestaurant(true);
         }
 
         mMainImage.setOnTouchListener(new OnSwipeTouchListener(this) {
@@ -88,26 +88,55 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    synchronized public void waitForRestaurant(boolean client) {
+        if (client) {
+            if (mRestaurants.size() > i) {
+                mLoading.setVisibility(View.INVISIBLE);
+                recipeCallback();
+            } else {
+                loadingScreen();
+                waiting = true;
+            }
+        } else {
+            if (waiting) {
+                mLoading.setVisibility(View.INVISIBLE);
+                waiting = false;
+                recipeCallback();
+            }
+        }
+    }
+
+    public void recipeCallback() {
+        displayRestaurant(mRestaurants.get(i));
+    }
+
+    public void loadingScreen() {
+        mMainImage.setImageResource(0);
+        mCostCat.setText("");
+        mTitle.setText("");
+        mLoading.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onRestoreInstanceState(savedInstanceState, persistentState);
     }
 
     private void newRestaurant() {
-        i++;
-        Restaurant currRestaurant = getRestaurant(i);
-        displayRestaurant(currRestaurant);
-        if (i != 0 && i > iLast && i %  5 == 0) {
-            iLast = i;
-            new FindPictures().execute(""+(i*10 / 5));
+        if (mRestaurants.size() > i) {
+            i++;
+            waitForRestaurant(true);
+            if (i > iLast && i %  5 == 0) {
+                iLast = i;
+                new FindPictures().execute(""+(i*10 / 5));
+            }
         }
     }
 
     private void oldRestaurant() {
         if (i > 0) {
             i--;
-            Restaurant currRestaurant = getRestaurant(i);
-            displayRestaurant(currRestaurant);
+            waitForRestaurant(true);
         }
     }
 
@@ -145,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
         if (mRestaurants.size() > pos) {
             return mRestaurants.get(pos);
         } else {
-            Toast.makeText(this, "wait", Toast.LENGTH_SHORT).show();
             return null;
         }
     }
@@ -162,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(Restaurant... values) {
             super.onProgressUpdate(values);
             mRestaurants.add(values[0]);
+            waitForRestaurant(false);
         }
 
         @Override
@@ -200,9 +229,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     List<String> pictures = RestaurantParser.getPictures(response.body().string());
-                    Restaurant r = restaurants.get(pos);
-                    r.setPictures(pictures);
-                    publishProgress(r);
+                    if (pictures.size() > 0) {
+                        Restaurant r = restaurants.get(pos);
+                        r.setPictures(pictures);
+                        publishProgress(r);
+                    }
                 }
             });
         }
