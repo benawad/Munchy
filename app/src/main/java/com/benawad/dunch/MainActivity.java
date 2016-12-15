@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        
+
         mApiFactory = new YelpAPIFactory(
                 getString(R.string.consumerKey),
                 getString(R.string.consumerSecret),
@@ -139,12 +139,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @SuppressWarnings("MissingPermission")
     public void initLocation() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        mLongitude = location.getLongitude();
-        mLatitude = location.getLatitude();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mLatitude = 37.7577;
+            mLongitude = -122.4376;
+        } else {
+            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            mLongitude = location.getLongitude();
+            mLatitude = location.getLatitude();
+        }
         mCoordinate = CoordinateOptions.builder()
                 .latitude(mLatitude)
                 .longitude(mLongitude).build();
@@ -168,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this, "Location required to get nearby restaurants", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Setting San Francisco as default location", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
