@@ -9,4 +9,5 @@
 .externalNativeBuild
 .idea
 yelp_api_keys.xml
+app-release.apk
 assets
