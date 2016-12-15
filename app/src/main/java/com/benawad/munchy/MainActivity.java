@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location == null) {
+            if (location != null) {
                 mLongitude = location.getLongitude();
                 mLatitude = location.getLatitude();
                 if (newSession) {
