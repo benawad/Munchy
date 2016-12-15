@@ -70,10 +70,6 @@ public class Restaurant implements Parcelable{
         return picUrl;
     }
 
-    public void setPicUrl(String picUrl) {
-        this.picUrl = picUrl;
-    }
-
     public List<String> getPictures() {
         return pictures;
     }

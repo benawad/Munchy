@@ -9,13 +9,9 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -210,11 +206,6 @@ public class MainActivity extends AppCompatActivity {
         mLoading.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState);
-    }
-
     private void newRestaurant() {
         if (mRestaurants.size() > i) {
             i++;
@@ -235,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sameRestaurantNewPic() {
-        Restaurant currRestaurant = getRestaurant(i);
+        Restaurant currRestaurant = mRestaurants.get(i);
         if (currRestaurant.getPictures().size() > currRestaurant.getCurrPic()) {
             currRestaurant.incCurrPic();
             waitForRestaurant(true);
@@ -248,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sameRestaurantPrevPic() {
-        Restaurant currRestaurant = getRestaurant(i);
+        Restaurant currRestaurant = mRestaurants.get(i);
         if (currRestaurant.getCurrPic() > 0) {
             currRestaurant.decCurrPic();
             displayRestaurant(currRestaurant);
@@ -262,14 +253,6 @@ public class MainActivity extends AppCompatActivity {
                 .into(mMainImage);
         mTitle.setText(r.getName());
         mCostCat.setText(r.getCostCat());
-    }
-
-    public Restaurant getRestaurant(int pos) {
-        if (mRestaurants.size() > pos) {
-            return mRestaurants.get(pos);
-        } else {
-            return null;
-        }
     }
 
     class FindPictures extends AsyncTask<String, Restaurant, String> {
