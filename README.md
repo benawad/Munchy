@@ -1,4 +1,4 @@
-Munchy
+# Munchy
 
 ![App Screenshot](https://lh3.googleusercontent.com/i7_ZTmLn6b0ez_H_OALSBpTltP9-GWn0Adg5SScaFrN31D26Kf5FyzuypAifMKU2Gg=h900-rw)
 
