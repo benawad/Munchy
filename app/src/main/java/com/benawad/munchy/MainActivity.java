@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,9 +27,9 @@ import com.yelp.clientlib.entities.Business;
 import com.yelp.clientlib.entities.Category;
 import com.yelp.clientlib.entities.SearchResponse;
 import com.yelp.clientlib.entities.options.CoordinateOptions;
+import com.yelp.clientlib.exception.exceptions.UnavailableForLocation;
 
 import java.io.IOException;
-import java.text.CollationElementIterator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -112,9 +114,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick() {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mRestaurants.get(i).getMainUrl()));
-                startActivity(intent);
+                if (mRestaurants.size() > i) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(mRestaurants.get(i).getMainUrl()));
+                    startActivity(intent);
+                }
             }
         });
 
@@ -132,9 +136,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         } else {
             initLocation();
-            if (newSession) {
-                new FindPictures().execute("0");
-            }
             waitForRestaurant(true);
         }
 
@@ -146,10 +147,49 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             mLatitude = 37.7577;
             mLongitude = -122.4376;
+            if (newSession) {
+                new FindPictures().execute("0");
+            }
         } else {
             Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            mLongitude = location.getLongitude();
-            mLatitude = location.getLatitude();
+            if (location == null) {
+                mLongitude = location.getLongitude();
+                mLatitude = location.getLatitude();
+                if (newSession) {
+                    new FindPictures().execute("0");
+                }
+            } else {
+                Toast.makeText(this, "Getting location...", Toast.LENGTH_SHORT).show();
+                Criteria criteria = new Criteria();
+                criteria.setAccuracy(Criteria.ACCURACY_FINE);
+                criteria.setPowerRequirement(Criteria.POWER_HIGH);
+                lm.requestSingleUpdate(criteria, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        mCoordinate = CoordinateOptions.builder()
+                                .latitude(location.getLatitude())
+                                .longitude(location.getLongitude()).build();
+                        if (newSession) {
+                            new FindPictures().execute("0");
+                        }
+                    }
+
+                    @Override
+                    public void onStatusChanged(String s, int i, Bundle bundle) {
+                        Toast.makeText(MainActivity.this, "GPS needed", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onProviderEnabled(String s) {
+                        Toast.makeText(MainActivity.this, "GPS needed", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String s) {
+                        Toast.makeText(MainActivity.this, "GPS needed", Toast.LENGTH_SHORT).show();
+                    }
+                }, null);
+            }
         }
         mCoordinate = CoordinateOptions.builder()
                 .latitude(mLatitude)
@@ -172,9 +212,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "Setting San Francisco as default location", Toast.LENGTH_SHORT).show();
                 }
                 initLocation();
-                if (newSession) {
-                    new FindPictures().execute("0");
-                }
                 waitForRestaurant(true);
                 return;
             }
@@ -268,8 +305,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Restaurant... values) {
             super.onProgressUpdate(values);
-            mRestaurants.add(values[0]);
-            waitForRestaurant(false);
+            if (values != null) {
+                mRestaurants.add(values[0]);
+                waitForRestaurant(false);
+            } else {
+                Toast.makeText(MainActivity.this, "No data available for your location", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -280,7 +321,10 @@ public class MainActivity extends AppCompatActivity {
             retrofit2.Response<SearchResponse> sr = null;
             try {
                 sr = call.execute();
-            } catch (IOException e) {
+            } catch (UnavailableForLocation e) {
+                publishProgress(null);
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
 
