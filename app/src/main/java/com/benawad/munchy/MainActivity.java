@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initLocation() {
+        System.out.println("loc");
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             mLatitude = 37.7577;
@@ -165,16 +166,16 @@ public class MainActivity extends AppCompatActivity {
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    initLocation();
-                    if (newSession) {
-                        new FindPictures().execute("0");
-                    }
-                    waitForRestaurant(true);
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(this, "Setting San Francisco as default location", Toast.LENGTH_SHORT).show();
                 }
+                initLocation();
+                if (newSession) {
+                    new FindPictures().execute("0");
+                }
+                waitForRestaurant(true);
                 return;
             }
             // other 'case' lines to check for other
