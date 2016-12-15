@@ -1,4 +1,4 @@
-package com.benawad.dunch;
+package com.benawad.munchy;
 
 import android.Manifest;
 import android.content.Context;
@@ -66,12 +66,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(com.benawad.munchy.R.layout.activity_main);
 
-        mMainImage = (ImageView) findViewById(R.id.mainImage);
-        mTitle = (TextView) findViewById(R.id.restaurantLabel);
-        mCostCat = (TextView) findViewById(R.id.costCatLabel);
-        mLoading = (ProgressBar) findViewById(R.id.loading);
+        mMainImage = (ImageView) findViewById(com.benawad.munchy.R.id.mainImage);
+        mTitle = (TextView) findViewById(com.benawad.munchy.R.id.restaurantLabel);
+        mCostCat = (TextView) findViewById(com.benawad.munchy.R.id.costCatLabel);
+        mLoading = (ProgressBar) findViewById(com.benawad.munchy.R.id.loading);
 
         mClient = new OkHttpClient();
 
@@ -118,10 +118,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mApiFactory = new YelpAPIFactory(
-                getString(R.string.consumerKey),
-                getString(R.string.consumerSecret),
-                getString(R.string.token),
-                getString(R.string.tokenSecret));
+                getString(com.benawad.munchy.R.string.consumerKey),
+                getString(com.benawad.munchy.R.string.consumerSecret),
+                getString(com.benawad.munchy.R.string.token),
+                getString(com.benawad.munchy.R.string.tokenSecret));
         mYelpApi = mApiFactory.createAPI();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

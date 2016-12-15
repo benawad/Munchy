@@ -1,4 +1,4 @@
-package com.benawad.dunch;
+package com.benawad.munchy;
 
 
 import android.content.Context;

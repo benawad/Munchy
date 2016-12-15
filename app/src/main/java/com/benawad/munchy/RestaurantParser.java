@@ -1,4 +1,4 @@
-package com.benawad.dunch;
+package com.benawad.munchy;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
