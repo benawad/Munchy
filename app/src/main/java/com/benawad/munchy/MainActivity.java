@@ -27,6 +27,7 @@ import com.yelp.clientlib.entities.SearchResponse;
 import com.yelp.clientlib.entities.options.CoordinateOptions;
 
 import java.io.IOException;
+import java.text.CollationElementIterator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -324,6 +325,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     List<String> pictures = RestaurantParser.getPictures(response.body().string());
+                    Collections.shuffle(pictures, new Random(System.nanoTime()));
                     if (pictures.size() > 0) {
                         Restaurant r = restaurants.get(pos);
                         r.setPictures(pictures);
@@ -377,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (body != null) {
                 List<String> pictures = RestaurantParser.getPictures(body);
+                Collections.shuffle(pictures, new Random(System.nanoTime()));
                 publishProgress(pictures);
             }
             return null;
