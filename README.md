@@ -2,11 +2,11 @@
 
 ## Getting Started
 
-1. Import this GitHub project using Android Studio
+* Import this GitHub project using Android Studio
 
-2. Get [Yelp Api keys](https://www.yelp.com/developers/documentation/v2/overview)
+* Get [Yelp Api keys](https://www.yelp.com/developers/documentation/v2/overview)
 
-3. Add the Yelp keys to `strings.xml`
+* Add the Yelp keys to `strings.xml`
 
 ```
 <string name="consumerKey"></string>
@@ -15,7 +15,7 @@
 <string name="tokenSecret"></string>
 ```
 
-4. Run the app.
+* Run the app.
 
 ![App Screenshot](https://lh3.googleusercontent.com/i7_ZTmLn6b0ez_H_OALSBpTltP9-GWn0Adg5SScaFrN31D26Kf5FyzuypAifMKU2Gg=h900-rw)
 
